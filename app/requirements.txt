@@ -1,0 +1,33 @@
+# Legal Intelligence Assistant — app dependencies (Milestone 5 audit 2026-10-29)
+# Verified against the integrated app code path on Databricks Apps runtime
+# (Python 3.11). Every import of streamlit_app.py / app_runtime.py /
+# lakebase_retriever.py / workflow/* is covered: streamlit, langgraph,
+# pydantic (workflow/state.py, classifier.py, planner.py models),
+# databricks-sdk (auth, statement execution), requests (Lakebase REST + LLM),
+# pg8000 + scramp (Postgres driver + SCRAM auth).
+streamlit~=1.38.0
+pg8000==1.30.5
+# scramp MUST be pinned to the 1.4 line: scramp 1.5.0 REMOVED
+# make_channel_binding(), which pg8000 1.30.5 calls during SCRAM auth at
+# connection time (hosted deployment failure 2026-10-29: AttributeError
+# "module 'scramp' has no attribute 'make_channel_binding'"). scramp 1.4.18
+# is the newest 1.4 release that still exports it. Do not relax this to
+# ">=1.4" — pip would resolve 1.5.0 again. (pg8000 1.31.x is the line that
+# supports scramp 1.5.0; upgrading the driver is a separate decision.)
+scramp==1.4.18
+databricks-sdk>=0.118.0
+requests>=2.31.0
+langgraph==1.2.18
+pydantic>=2.7,<3
+# Stage 3 (2026-10-29; pin corrected same day after deployment failure 004):
+# in-app source page preview + exact evidence highlighting.
+# pypdfium2 renders the cited PDF page; Pillow draws the stored evidence
+# rectangles. Both ship cp311/py3-none manylinux2014 wheels for the app
+# image (verified). PILLOW CEILING: streamlit 1.38.0 requires
+# `pillow>=7.1.0,<11` (verified from the streamlit-1.38.0 wheel METADATA),
+# so Pillow MUST stay < 11 — Pillow==13.0.0 broke pip resolution in the app
+# build ("Error installing packages", 2026-10-29 20:32 IST deploy).
+# Pillow 10.4.0 satisfies the ceiling; the viewer only uses stable APIs
+# (ImageDraw RGBA overlay, resize, convert) verified against 10.4.0.
+pypdfium2==5.14.0
+Pillow==10.4.0

@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+
+# Local artifacts
+streamlit_app_BACKUP.py
+debug_info.py
+.DS_Store

@@ -1,0 +1,58 @@
+command: [
+  "streamlit",
+  "run",
+  "streamlit_app.py",
+  "--server.enableCORS=false",
+  "--server.enableXsrfProtection=false"
+]
+
+env:
+  - name: DATABRICKS_HOST
+    valueFrom: "{{DATABRICKS_HOST}}"
+  - name: DATABRICKS_TOKEN
+    valueFrom: "{{DATABRICKS_TOKEN}}"
+  # Milestone 5 (Stage C2): the app REQUIRES an explicit hybrid_v2 retrieval
+  # mode — app_runtime.build_app_graph() fails fast if this is missing or
+  # wrong; there is no silent fallback to the legacy retrieval path.
+  - name: RETRIEVER_MODE
+    value: "hybrid_v2"
+
+resources:
+  - name: lakebase-password
+    secret:
+      scope: lakebase
+      key: db_password
+      permission: READ
+  
+  - name: sql-warehouse
+    sql_warehouse:
+      id: c99228c48630a173
+      permission: CAN_USE
+  
+  - name: chat-history-table
+    uc_securable:
+      securable_full_name: workspace.legal_assistant_lakebase.chat_history
+      securable_type: TABLE
+      permission: SELECT
+
+  # Milestone 5 (Stage C4): read-only Unity Catalog tables required by the
+  # LangGraph capability nodes (corpus_overview, clause_discovery,
+  # structured_lookup, comparison). All workflow SQL against these tables
+  # is SELECT-only with named parameter binding.
+  - name: v2-documents-table
+    uc_securable:
+      securable_full_name: workspace.legal_assistant_v2.documents
+      securable_type: TABLE
+      permission: SELECT
+
+  - name: v2-extracted-fields-table
+    uc_securable:
+      securable_full_name: workspace.legal_assistant_v2.extracted_fields
+      securable_type: TABLE
+      permission: SELECT
+
+  - name: v2-evidence-table
+    uc_securable:
+      securable_full_name: workspace.legal_assistant_v2.evidence
+      securable_type: TABLE
+      permission: SELECT
