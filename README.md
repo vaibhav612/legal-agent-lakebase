@@ -10,9 +10,9 @@ Ask questions in plain English about a corpus of contracts and get **cited, page
 
 ## 🖼️ How a Question Flows Through the System
 
-![Legal Document Intelligence — User Query Flow](docs/images/query-flow.png)
+![Legal Document Intelligence — User Query Flow](query-flow.png)
 
-![Legal Document Intelligence — End-to-End Architecture & Data Flow](docs/images/data-flow.png)
+![Legal Document Intelligence — End-to-End Architecture & Data Flow](data-flow.png)
 
 ---
 
